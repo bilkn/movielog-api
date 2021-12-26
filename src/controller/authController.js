@@ -1,5 +1,9 @@
-async function signup(req, res) {
+async function signUp(req, res) {
   res.status(200).send({ username: "Jamiryo successo" });
 }
 
-module.exports = { signup };
+async function signIn(req, res) {
+  res.status(200).send({ username: "Jamiryo successo" });
+}
+
+module.exports = { signUp,signIn };

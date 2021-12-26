@@ -1,10 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const signupSchema = require("../../validations/signupValidation");
+const {
+  signInSchema,
+  signUpSchema,
+} = require("../../validations/authValidation");
 const validationMiddleware = require("../../middleware/auth/validationMiddleware");
-const { signup } = require("../../controller/authController");
+const { signIn, signUp } = require("../../controller/authController");
 
-router.post("/signup", validationMiddleware(signupSchema), signup);
+router.post("/signup", validationMiddleware(signUpSchema), signUp);
+router.post("/signin", validationMiddleware(signInSchema), signIn);
 
-
-module.exports = router
+module.exports = router;
