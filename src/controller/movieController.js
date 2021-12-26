@@ -1,14 +1,10 @@
-const { urlencoded } = require("express");
-const express = require("express");
 const needle = require("needle");
-const { default: axios } = require("axios");
-const router = express.Router();
 
 const API_BASE_URL = process.env.API_BASE_URL;
 const API_KEY_NAME = process.env.API_KEY_NAME;
 const API_KEY_VALUE = process.env.API_KEY_VALUE;
 
-router.get("/discover", async (req, res) => {
+async function discover(req, res) {
   try {
     const { genres } = req.query;
     const params = new URLSearchParams({
@@ -27,6 +23,8 @@ router.get("/discover", async (req, res) => {
     console.log(err);
     res.status(500);
   }
-});
+}
 
-module.exports = router;
+module.exports = {
+  discover,
+};
