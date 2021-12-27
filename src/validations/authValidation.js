@@ -1,6 +1,6 @@
 const yup = require("yup");
 
-const signupSchema = yup.object({
+const signUpSchema = yup.object({
   email: yup
     .string()
     .required("Email field must not be empty!")
@@ -15,4 +15,12 @@ const signupSchema = yup.object({
     .required("Confirm password field must not be empty!"),
 });
 
-module.exports = signupSchema
+const signInSchema = yup.object({
+  email: yup
+    .string()
+    .required("Email field must not be empty!")
+    .email("Please provide valid email."),
+  password: yup.string().required("Password field must not be empty!"),
+});
+
+module.exports = { signInSchema, signUpSchema };
