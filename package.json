@@ -1,0 +1,10 @@
+{
+  "name": "movielog-application-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/server.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "Bilkan konus",
+  "license": "ISC"
+}
