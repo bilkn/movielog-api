@@ -12,7 +12,6 @@ async function discover(req, res) {
       with_genres: genres,
     });
 
-    console.log("params", `${API_BASE_URL}/discover/movie?${params}`);
     const response = await needle(
       "get",
       `${API_BASE_URL}/discover/movie?${params}`
