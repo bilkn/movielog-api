@@ -1,17 +1,18 @@
 const jwt = require("jsonwebtoken");
 
+const sendAuthenticationError = (res) =>
+  res.status(401).send({ message: "Failed to get authorization!" });
+
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
-  console.log("authHeader", authHeader);
   const token = authHeader?.split(" ")[1];
 
-  if (!token) res.sendStatus(401);
+  if (!token) return sendAuthenticationError(res);
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_PRIVATE_KEY, (err,user) => {
-    console.log("token: ", token);
+  jwt.verify(token, process.env.ACCESS_TOKEN_PRIVATE_KEY, (err, user) => {
     if (err) {
       console.log(err);
-      return res.status(401).send({ message: "Failed to get authorization!" });
+      return sendAuthenticationError(res);
     }
     req.user = user;
     next();
