@@ -7,9 +7,10 @@
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
         ".gitignore": true,
-        "package.json": false,
+        "package.json": true,
         "package-lock.json": true,
-        ".vscode": true
+        ".vscode": true,
+        "node_modules": false
     },
     "explorerExclude.backup": null
 }

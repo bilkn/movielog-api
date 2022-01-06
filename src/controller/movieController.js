@@ -7,7 +7,7 @@ const API_KEY_VALUE = process.env.API_KEY_VALUE;
 async function discover(req, res) {
   try {
     const { genres } = req.query;
-    const params = new URLSearchParams({
+    /*     const params = new URLSearchParams({
       [API_KEY_NAME]: API_KEY_VALUE,
       with_genres: genres,
     });
@@ -15,9 +15,9 @@ async function discover(req, res) {
     const response = await needle(
       "get",
       `${API_BASE_URL}/discover/movie?${params}`
-    );
+    ); */
 
-    res.json(response.body);
+    res.json("Access to protected resource is provided.");
   } catch (err) {
     console.log(err);
     res.status(500);
