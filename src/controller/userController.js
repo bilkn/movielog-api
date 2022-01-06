@@ -27,13 +27,15 @@ async function deleteAccount(req, res) {
 
     return res.status(200).send({
       success: true,
-      message: "Account has been deleted successfully.",
+      message: "Account+ has been deleted successfully.",
     });
   } catch (err) {
     res.sendStatus(500);
     console.log(err);
   }
 }
+
+
 
 module.exports = {
   deleteAccount,

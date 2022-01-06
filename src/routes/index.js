@@ -1,5 +1,5 @@
 const MovieRouter = require("./api/movie");
-const AccountRouter = require("./api/account");
+const AccountRouter = require("./api/user");
 
 module.exports = {
   MovieRouter,
