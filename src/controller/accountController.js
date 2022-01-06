@@ -4,25 +4,31 @@ const { AUTH_SERVER_URL } = require("../constants/url");
 
 async function deleteAccount(req, res) {
   const { password, refreshToken } = req.body;
-  const data = { password, refreshToken };
+  const { id } = req.user;
+  const data = { id, password, refreshToken };
 
-  console.log(req.user)
- /*   if (!user) {
-    return res.status(400).send({
-      success: false,
-      message: "User id is not provided, please provide user id.",
-    });
-  }  */
+  if (!id) {
+    return res
+      .send(400)
+      .send({ message: "User id is not provided, please provide user id." });
+  }
 
   try {
-    const response = await needle.delete(
-      `${AUTH_SERVER_URL}/users/:${id}`,
+    const response = await needle(
+      "DELETE",
+      `${AUTH_SERVER_URL}/auth/accounts`,
       data
     );
-    console.log("App server response", response);
-    res.send(200);
-    // !!! if response is other than 200, send an error.
+
+    if (!response.body.success) {
+      return res.status(400).send(response.body);
+    }
     await deleteUser(id);
+
+    return res.status(200).send({
+      success: true,
+      message: "Account has been deleted successfully.",
+    });
   } catch (err) {
     res.sendStatus(500);
     console.log(err);
