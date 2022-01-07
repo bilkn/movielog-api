@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const { MovieRouter, AccountRouter } = require("./routes");
+const { MovieRouter, UserRouter } = require("./routes");
 
 const PORT = process.env.PORT || 5000;
 
@@ -18,4 +18,4 @@ app.get("/", (req, res) => {
 
 app.use("/api", MovieRouter);
 
-app.use("/api", AccountRouter);
+app.use("/api", UserRouter);

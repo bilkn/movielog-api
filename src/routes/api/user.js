@@ -1,14 +1,32 @@
 const express = require("express");
 const router = express.Router();
-const { deleteAccount } = require("../../controller/userController");
-const validateValues = require("@core/lib/middleware/validationMiddleware");
+const {
+  deleteAccount,
+  deleteUserData,
+} = require("../../controller/userController");
+const {
+  validateValues,
+  validateCredentials,
+} = require("@core/lib/middleware/");
 const { authenticateToken } = require("../../middleware/auth");
-const { deleteAccountSchema } = require("@core/lib/validations/authValidation");
+const {
+  deleteAccountSchema,
+  deleteUserDataSchema,
+} = require("@core/lib/validations/authValidation");
 
 router.delete(
-  "/users",
+  "/user/data",
+  validateValues(deleteUserDataSchema),
+  authenticateToken,
+  validateCredentials,
+  deleteUserData
+);
+
+router.delete(
+  "/user",
   validateValues(deleteAccountSchema),
   authenticateToken,
+  validateCredentials,
   deleteAccount
 );
 
