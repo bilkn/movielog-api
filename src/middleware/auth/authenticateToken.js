@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 
-const sendAuthenticationError = (res) =>
+const sendAuthenticationError = (res) => {
   res.status(401).send({ message: "Failed to get authorization!" });
+};
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];

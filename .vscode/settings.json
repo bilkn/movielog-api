@@ -10,7 +10,8 @@
         "package.json": true,
         "package-lock.json": true,
         ".vscode": true,
-        "node_modules": false
+        "node_modules": true,
+        ".env": true
     },
     "explorerExclude.backup": null
 }
