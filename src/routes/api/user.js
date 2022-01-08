@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   deleteAccount,
   deleteUserData,
+  getUserInfo,
 } = require("../../controller/userController");
 const {
   validateValues,
@@ -13,6 +14,8 @@ const {
   deleteAccountSchema,
   deleteUserDataSchema,
 } = require("@core/lib/validations/authValidation");
+
+router.get("/", authenticateToken, getUserInfo);
 
 router.delete(
   "/data",
