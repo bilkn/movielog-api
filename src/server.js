@@ -24,5 +24,4 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", MovieRouter);
-
-app.use("/api", UserRouter);
+app.use("/api/user", UserRouter);

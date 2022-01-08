@@ -15,7 +15,7 @@ const {
 } = require("@core/lib/validations/authValidation");
 
 router.delete(
-  "/user/data",
+  "/data",
   validateValues(deleteUserDataSchema),
   authenticateToken,
   validateCredentials,
@@ -23,7 +23,7 @@ router.delete(
 );
 
 router.delete(
-  "/user",
+  "/",
   validateValues(deleteAccountSchema),
   authenticateToken,
   validateCredentials,
