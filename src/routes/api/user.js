@@ -3,19 +3,22 @@ const router = express.Router();
 const {
   deleteAccount,
   deleteUserData,
+  getUserInfo,
 } = require("../../controller/userController");
 const {
   validateValues,
   validateCredentials,
+  authenticateToken,
 } = require("@core/lib/middleware/");
-const { authenticateToken } = require("../../middleware/auth");
 const {
   deleteAccountSchema,
   deleteUserDataSchema,
 } = require("@core/lib/validations/authValidation");
 
+router.get("/", authenticateToken, getUserInfo);
+
 router.delete(
-  "/user/data",
+  "/data",
   validateValues(deleteUserDataSchema),
   authenticateToken,
   validateCredentials,
@@ -23,7 +26,7 @@ router.delete(
 );
 
 router.delete(
-  "/user",
+  "/",
   validateValues(deleteAccountSchema),
   authenticateToken,
   validateCredentials,

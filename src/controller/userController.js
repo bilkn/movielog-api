@@ -25,7 +25,7 @@ async function deleteAccount(req, res) {
     }
     await deleteUser(id);
 
-    return res.status(200).send({
+    return res.send({
       success: true,
       message: "Account has been deleted successfully.",
     });
@@ -50,7 +50,13 @@ async function deleteUserData(req, res) {
   }
 }
 
+async function getUserInfo(req, res) {
+  const { username } = req.user;
+  res.send({ username });
+}
+
 module.exports = {
   deleteAccount,
   deleteUserData,
+  getUserInfo
 };
