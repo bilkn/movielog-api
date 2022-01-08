@@ -11,9 +11,91 @@ const createSearchParams = (params) => {
   });
 };
 
+const sendBadRequestError = (res, message) =>
+  res.status(400).send({
+    success: false,
+    message,
+  });
+
+const getReleaseYear = (date) => date.split("-")[0];
+
+const getCastByMovieID = async (id) => {
+  const urlParams = createSearchParams();
+
+  const {
+    body: { cast },
+  } = await needle("get", `${API_BASE_URL}/movie/${id}/credits?${urlParams}`);
+  return cast.map(({ profile_path: profile, original_name: name }) => ({
+    profile,
+    name,
+  }));
+};
+
+/* Reponse creators */
+
+const createSearchResponse = async (data) => {
+  const urlParams = createSearchParams();
+
+  const {
+    body: { genres },
+  } = await needle("get", `${API_BASE_URL}/genre/movie/list?${urlParams}`);
+
+  if (genres) {
+    return data.map(
+      ({ id, title, release_date, genre_ids, poster_path, vote_average }) => ({
+        id,
+        title,
+        releaseYear: getReleaseYear(release_date),
+        genres: genre_ids.map((genreID) => ({
+          id: genreID,
+          name: genres.find(({ id }) => id === genreID).name,
+        })),
+        poster: poster_path,
+        rating: vote_average,
+        watched: false,
+        willWatch: false,
+      })
+    );
+  }
+};
+
+const createMovieDetailResponse = async (data) => {
+  const {
+    genres,
+    id,
+    overview,
+    poster_path,
+    release_date,
+    title,
+    vote_average,
+  } = data;
+
+  const cast = await getCastByMovieID(id);
+
+  return {
+    cast,
+    genres,
+    id,
+    overview,
+    poster: poster_path,
+    rating: vote_average,
+    releaseYear: getReleaseYear(release_date),
+    title,
+    watched: false,
+    willWatch: false,
+  };
+};
+
+/* Controllers */
+
 async function discover(req, res) {
   try {
-    const { genres, page } = req.query;
+    const { genres, page = 1 } = req.query;
+
+    if (!genres) {
+      const message = "Genre is not provided, please provide genre!";
+      return sendBadRequestError(res, message);
+    }
 
     const params = {
       with_genres: genres,
@@ -34,7 +116,13 @@ async function discover(req, res) {
 }
 
 async function search(req, res) {
-  const { q, page } = req.query;
+  const { q, page = 1 } = req.query;
+
+  if (!q) {
+    const message =
+      "Search query is not provided, please provide search query!";
+    return sendBadRequestError(res, message);
+  }
 
   const params = {
     query: q,
@@ -48,14 +136,15 @@ async function search(req, res) {
       "get",
       `${API_BASE_URL}/search/movie?${urlParams}`
     );
-    res.send(body);
+    const response = await createSearchResponse(body.results);
+    res.send(response);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
   }
 }
 
-async function getFeaturedMovies(req, res) {
+async function getFeaturedMovies(_, res) {
   try {
     const urlParams = createSearchParams();
 
@@ -65,6 +154,30 @@ async function getFeaturedMovies(req, res) {
     );
     res.send(body);
   } catch (err) {
+    res.sendStatus(500);
+    console.log(err);
+  }
+}
+
+async function getMovieDetail(req, res) {
+  try {
+    const { movie } = req.params;
+
+    if (!movie) {
+      const message = "Movie id is not provided, please provide movie id!";
+      return sendBadRequestError(res, message);
+    }
+
+    const urlParams = createSearchParams();
+
+    const { body } = await needle(
+      "get",
+      `${API_BASE_URL}/movie/${movie}?${urlParams}`
+    );
+
+    const response = await createMovieDetailResponse(body);
+    res.send(response);
+  } catch (err) {
     console.log(err);
   }
 }
@@ -73,4 +186,5 @@ module.exports = {
   discover,
   search,
   getFeaturedMovies,
+  getMovieDetail,
 };

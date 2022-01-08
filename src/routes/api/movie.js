@@ -3,6 +3,7 @@ const {
   discover,
   search,
   getFeaturedMovies,
+  getMovieDetail,
 } = require("../../controller/movieController");
 const { authenticateToken } = require("@core/lib/middleware");
 
@@ -13,5 +14,7 @@ router.get("/discover", authenticateToken, discover);
 router.get("/search", authenticateToken, search);
 
 router.get("/featured", authenticateToken, getFeaturedMovies);
+
+router.get("/:movie", authenticateToken, getMovieDetail);
 
 module.exports = router;
