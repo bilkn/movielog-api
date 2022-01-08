@@ -20,7 +20,7 @@ app.use(limiter);
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 
 app.get("/", (req, res) => {
-  res.status(200).send({ success: true, message: "Succesful!" });
+  res.send({ success: true, message: "Succesful!" });
 });
 
 app.use("/api", MovieRouter);

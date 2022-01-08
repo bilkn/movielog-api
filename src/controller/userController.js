@@ -25,7 +25,7 @@ async function deleteAccount(req, res) {
     }
     await deleteUser(id);
 
-    return res.status(200).send({
+    return res.send({
       success: true,
       message: "Account has been deleted successfully.",
     });
