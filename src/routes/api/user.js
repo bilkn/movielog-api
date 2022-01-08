@@ -7,8 +7,8 @@ const {
 const {
   validateValues,
   validateCredentials,
+  authenticateToken,
 } = require("@core/lib/middleware/");
-const { authenticateToken } = require("../../middleware/auth");
 const {
   deleteAccountSchema,
   deleteUserDataSchema,

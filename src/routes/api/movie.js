@@ -1,6 +1,6 @@
 const express = require("express");
 const { discover } = require("../../controller/movieController");
-const { authenticateToken } = require("../../middleware/auth");
+const { authenticateToken } = require("@core/lib/middleware");
 
 const router = express.Router();
 
