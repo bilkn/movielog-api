@@ -1,6 +1,6 @@
 const express = require("express");
 const {
-  discover,
+  getMoviesByGenre,
   search,
   getFeaturedMovies,
   getMovieDetail,
@@ -9,7 +9,7 @@ const { authenticateToken } = require("@core/lib/middleware");
 
 const router = express.Router();
 
-router.get("/discover", authenticateToken, discover);
+router.get("/discover", authenticateToken, getMoviesByGenre);
 
 router.get("/search", authenticateToken, search);
 

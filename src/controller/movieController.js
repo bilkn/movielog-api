@@ -33,7 +33,7 @@ const getCastByMovieID = async (id) => {
 
 /* Reponse creators */
 
-const createSearchResponse = async (data) => {
+const createMovieListResponse = async (data) => {
   const urlParams = createSearchParams();
 
   const {
@@ -88,7 +88,7 @@ const createMovieDetailResponse = async (data) => {
 
 /* Controllers */
 
-async function discover(req, res) {
+async function getMoviesByGenre(req, res) {
   try {
     const { genres, page = 1 } = req.query;
 
@@ -104,11 +104,12 @@ async function discover(req, res) {
 
     const urlParams = createSearchParams(params);
 
-    const { body } = await needle(
-      "get",
-      `${API_BASE_URL}/discover/movie?${urlParams}`
-    );
-    res.send(body);
+    const {
+      body: { results },
+    } = await needle("get", `${API_BASE_URL}/discover/movie?${urlParams}`);
+
+    const response = await createMovieListResponse(results);
+    res.send(response);
   } catch (err) {
     console.log(err);
     res.status(500);
@@ -132,11 +133,11 @@ async function search(req, res) {
   try {
     const urlParams = createSearchParams(params);
 
-    const { body } = await needle(
-      "get",
-      `${API_BASE_URL}/search/movie?${urlParams}`
-    );
-    const response = await createSearchResponse(body.results);
+    const {
+      body: { results },
+    } = await needle("get", `${API_BASE_URL}/search/movie?${urlParams}`);
+
+    const response = await createMovieListResponse(results);
     res.send(response);
   } catch (err) {
     console.log(err);
@@ -148,11 +149,12 @@ async function getFeaturedMovies(_, res) {
   try {
     const urlParams = createSearchParams();
 
-    const { body } = await needle(
-      "get",
-      `${API_BASE_URL}/movie/popular?${urlParams}`
-    );
-    res.send(body);
+    const {
+      body: { results },
+    } = await needle("get", `${API_BASE_URL}/movie/popular?${urlParams}`);
+
+    const response = await createMovieListResponse(results);
+    res.send(response);
   } catch (err) {
     res.sendStatus(500);
     console.log(err);
@@ -183,7 +185,7 @@ async function getMovieDetail(req, res) {
 }
 
 module.exports = {
-  discover,
+  getMoviesByGenre,
   search,
   getFeaturedMovies,
   getMovieDetail,
