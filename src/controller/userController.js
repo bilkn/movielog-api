@@ -1,4 +1,4 @@
-const { deleteUser } = require("@core/lib/services/UserService");
+const { deleteUser, resetUserData } = require("@core/lib/services/UserService");
 const needle = require("needle");
 const { AUTH_SERVER_URL } = require("../constants/url");
 const { sendBadRequestError } = require("../utils");
@@ -41,7 +41,7 @@ async function deleteUserData(req, res) {
   const { id } = req.user;
 
   try {
-    await deleteUser(id);
+    await resetUserData(id);
     return res.status(200).send({
       success: true,
       message: "Your data has been deleted successfully.",

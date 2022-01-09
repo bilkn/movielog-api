@@ -1,16 +1,13 @@
-const { addItemToList } = require("@core/lib/services/UserService");
+const { addItemToList, getList } = require("@core/lib/services/UserService");
 const { movieService } = require("../services");
 
-async function addMovieToTheList(req, res) {
-  const validLists = ["watchedList", "watchList"];
-  const listNames = {
-    watchedList: "watched list",
-    watchList: "watch list",
-  };
-  const { id: userID } = req.user;
-  const { list } = req.params;
-  const { movie: movieID } = req.query;
+const validLists = ["watchedList", "watchList"];
+const listNames = {
+  watchedList: "watched list",
+  watchList: "watch list",
+};
 
+const isListValid = (res, list) => {
   if (!list) {
     return sendBadRequestError(
       res,
@@ -21,20 +18,57 @@ async function addMovieToTheList(req, res) {
   if (!validLists.includes(list)) {
     return sendBadRequestError(res, "List query parameter is not valid!");
   }
+  return true;
+};
+
+async function addMovieToTheList(req, res) {
+  const { id: userID } = req.user;
+  const { list } = req.params;
+  const { movie: movieID } = req.query;
+
+  if (!isListValid(res, list)) return;
 
   try {
-    const movie = await movieService.getMovieDetail(movieID);
-    addItemToList(userID, [list], movie);
+    let movie = null;
+    movie = await movieService.getMovieDetail(movieID);
+
+    if (list === "watchedList") {
+      movie.watchDate = new Date();
+      movie.watched = true;
+      movie.willWatch = false;
+    } else {
+      movie.watched = false;
+      movie.willWatch = true;
+    }
+
+    await addItemToList(userID, list, movie);
     return res.send({
       success: true,
       message: `Movie is added to your ${listNames[list]} successfully.`,
       data: movie,
     });
   } catch (err) {
+    res.sendStatus(500);
+    console.log(err);
+  }
+}
+
+async function getMovieList(req, res) {
+  const { id: userID } = req.user;
+  const { list } = req.params;
+
+  if (!isListValid(res, list)) return;
+
+  try {
+    const movieList = await getList(userID, list);
+    res.send(movieList);
+  } catch (err) {
+    res.sendStatus(500);
     console.log(err);
   }
 }
 
 module.exports = {
   addMovieToTheList,
+  getMovieList,
 };

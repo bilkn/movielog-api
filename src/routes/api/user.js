@@ -12,6 +12,7 @@ const {
 } = require("@core/lib/middleware/");
 const {
   addMovieToTheList,
+  getMovieList,
 } = require("../../controller/userListController");
 
 const {
@@ -37,6 +38,9 @@ router.delete(
   deleteUserData
 );
 
-router.put("/list/:list", authenticateToken, addMovieToTheList);
+router
+  .route("/list/:list")
+  .put(authenticateToken, addMovieToTheList)
+  .get(authenticateToken, getMovieList);
 
 module.exports = router;
