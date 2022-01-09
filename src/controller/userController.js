@@ -1,8 +1,7 @@
-const { UserModel } = require("@core/lib");
-const { deleteUser, addItemToList } = require("@core/lib/services/UserService");
+const { deleteUser } = require("@core/lib/services/UserService");
 const needle = require("needle");
 const { AUTH_SERVER_URL } = require("../constants/url");
-const { getMovieDetail } = require("./movieController");
+const { sendBadRequestError } = require("../utils");
 
 async function deleteAccount(req, res) {
   const { password, refreshToken } = req.body;
@@ -10,9 +9,10 @@ async function deleteAccount(req, res) {
   const data = { id, password, refreshToken };
 
   if (!id) {
-    return res
-      .send(400)
-      .send({ message: "User id is not provided, please provide user id." });
+    return sendBadRequestError(
+      res,
+      "User id is not provided, please provide user id."
+    );
   }
 
   try {
@@ -55,16 +55,6 @@ async function deleteUserData(req, res) {
 async function getUserInfo(req, res) {
   const { username } = req.user;
   res.send({ username });
-}
-
-async function addMovieToTheWatchList(req, res) {
-  const { id: userID } = req.user;
-  const { id: movieID } = req.params;
-
-/*   try{
-    const movie = await getMovieDetail(req,res);
-    const user = await addItemToList(userID,'watchList')
-  } */
 }
 
 module.exports = {

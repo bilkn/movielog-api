@@ -1,11 +1,4 @@
-const { movieService } = require("../../services");
-const { searchMovies } = require("../../services/movie.services");
-
-const sendBadRequestError = (res, message) =>
-  res.status(400).send({
-    success: false,
-    message,
-  });
+const { movieService } = require("../services");
 
 /* Controllers */
 
@@ -46,7 +39,7 @@ async function search(req, res) {
   };
 
   try {
-    const movieList = await searchMovies(params);
+    const movieList = await movieService.searchMovies(params);
     res.send(movieList);
   } catch (err) {
     console.log(err);

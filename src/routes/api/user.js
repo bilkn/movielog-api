@@ -11,11 +11,23 @@ const {
   authenticateToken,
 } = require("@core/lib/middleware/");
 const {
+  addMovieToTheList,
+} = require("../../controller/userListController");
+
+const {
   deleteAccountSchema,
   deleteUserDataSchema,
 } = require("@core/lib/validations/authValidation");
 
 router.get("/", authenticateToken, getUserInfo);
+
+router.delete(
+  "/",
+  validateValues(deleteAccountSchema),
+  authenticateToken,
+  validateCredentials,
+  deleteAccount
+);
 
 router.delete(
   "/data",
@@ -25,12 +37,6 @@ router.delete(
   deleteUserData
 );
 
-router.delete(
-  "/",
-  validateValues(deleteAccountSchema),
-  authenticateToken,
-  validateCredentials,
-  deleteAccount
-);
+router.put("/list/:list", authenticateToken, addMovieToTheList);
 
 module.exports = router;
