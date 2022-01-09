@@ -1,32 +1,23 @@
-const needle = require("needle");
+const { movieService } = require("../services");
 
-const API_BASE_URL = process.env.API_BASE_URL;
-const API_KEY_NAME = process.env.API_KEY_NAME;
-const API_KEY_VALUE = process.env.API_KEY_VALUE;
+/* Controllers */
 
-const createSearchParams = (params) => {
-  return new URLSearchParams({
-    [API_KEY_NAME]: API_KEY_VALUE,
-    ...params,
-  });
-};
-
-async function discover(req, res) {
+async function getMoviesByGenre(req, res) {
   try {
-    const { genres, page } = req.query;
+    const { genres, page = 1 } = req.query;
+
+    if (!genres) {
+      const message = "Genre is not provided, please provide genre!";
+      return sendBadRequestError(res, message);
+    }
 
     const params = {
       with_genres: genres,
       page,
     };
 
-    const urlParams = createSearchParams(params);
-
-    const { body } = await needle(
-      "get",
-      `${API_BASE_URL}/discover/movie?${urlParams}`
-    );
-    res.send(body);
+    const movieList = await movieService.getMoviesByGenre(params);
+    res.send(movieList);
   } catch (err) {
     console.log(err);
     res.status(500);
@@ -34,7 +25,13 @@ async function discover(req, res) {
 }
 
 async function search(req, res) {
-  const { q, page } = req.query;
+  const { q, page = 1 } = req.query;
+
+  if (!q) {
+    const message =
+      "Search query is not provided, please provide search query!";
+    return sendBadRequestError(res, message);
+  }
 
   const params = {
     query: q,
@@ -42,35 +39,43 @@ async function search(req, res) {
   };
 
   try {
-    const urlParams = createSearchParams(params);
-
-    const { body } = await needle(
-      "get",
-      `${API_BASE_URL}/search/movie?${urlParams}`
-    );
-    res.send(body);
+    const movieList = await movieService.searchMovies(params);
+    res.send(movieList);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
   }
 }
 
-async function getFeaturedMovies(req, res) {
+async function getFeaturedMovies(_, res) {
   try {
-    const urlParams = createSearchParams();
+    const featuredMovies = await movieService.getFeaturedMovies();
+    res.send(featuredMovies);
+  } catch (err) {
+    res.sendStatus(500);
+    console.log(err);
+  }
+}
 
-    const { body } = await needle(
-      "get",
-      `${API_BASE_URL}/movie/popular?${urlParams}`
-    );
-    res.send(body);
+async function getMovieDetail(req, res) {
+  try {
+    const { movieID } = req.params;
+
+    if (!movieID) {
+      const message = "Movie id is not provided, please provide movie id!";
+      return sendBadRequestError(res, message);
+    }
+
+    const movie = await movieService.getMovieDetail(movieID);
+    res.send(movie);
   } catch (err) {
     console.log(err);
   }
 }
 
 module.exports = {
-  discover,
+  getMoviesByGenre,
   search,
   getFeaturedMovies,
+  getMovieDetail,
 };

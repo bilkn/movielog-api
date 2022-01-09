@@ -1,6 +1,7 @@
-const { deleteUser } = require("@core/lib/services/UserService");
+const { deleteUser, resetUserData } = require("@core/lib/services/UserService");
 const needle = require("needle");
 const { AUTH_SERVER_URL } = require("../constants/url");
+const { sendBadRequestError } = require("../utils");
 
 async function deleteAccount(req, res) {
   const { password, refreshToken } = req.body;
@@ -8,9 +9,10 @@ async function deleteAccount(req, res) {
   const data = { id, password, refreshToken };
 
   if (!id) {
-    return res
-      .send(400)
-      .send({ message: "User id is not provided, please provide user id." });
+    return sendBadRequestError(
+      res,
+      "User id is not provided, please provide user id."
+    );
   }
 
   try {
@@ -39,7 +41,7 @@ async function deleteUserData(req, res) {
   const { id } = req.user;
 
   try {
-    await deleteUser(id);
+    await resetUserData(id);
     return res.status(200).send({
       success: true,
       message: "Your data has been deleted successfully.",
@@ -58,5 +60,5 @@ async function getUserInfo(req, res) {
 module.exports = {
   deleteAccount,
   deleteUserData,
-  getUserInfo
+  getUserInfo,
 };
