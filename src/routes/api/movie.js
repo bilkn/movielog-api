@@ -15,6 +15,6 @@ router.get("/search", authenticateToken, search);
 
 router.get("/featured", authenticateToken, getFeaturedMovies);
 
-router.get("/:movie", authenticateToken, getMovieDetail);
+router.get("/:movieID", authenticateToken, getMovieDetail);
 
 module.exports = router;

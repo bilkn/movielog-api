@@ -1,6 +1,8 @@
-const { deleteUser } = require("@core/lib/services/UserService");
+const { UserModel } = require("@core/lib");
+const { deleteUser, addItemToList } = require("@core/lib/services/UserService");
 const needle = require("needle");
 const { AUTH_SERVER_URL } = require("../constants/url");
+const { getMovieDetail } = require("./movieController");
 
 async function deleteAccount(req, res) {
   const { password, refreshToken } = req.body;
@@ -55,8 +57,18 @@ async function getUserInfo(req, res) {
   res.send({ username });
 }
 
+async function addMovieToTheWatchList(req, res) {
+  const { id: userID } = req.user;
+  const { id: movieID } = req.params;
+
+/*   try{
+    const movie = await getMovieDetail(req,res);
+    const user = await addItemToList(userID,'watchList')
+  } */
+}
+
 module.exports = {
   deleteAccount,
   deleteUserData,
-  getUserInfo
+  getUserInfo,
 };
