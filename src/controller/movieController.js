@@ -19,8 +19,8 @@ async function getMoviesByGenre(req, res) {
     const movieList = await movieService.getMoviesByGenre(params);
     res.send(movieList);
   } catch (err) {
-    res.status(500);
     console.log(err);
+    res.status(500);
   }
 }
 
@@ -42,8 +42,8 @@ async function search(req, res) {
     const movieList = await movieService.searchMovies(params);
     res.send(movieList);
   } catch (err) {
-    res.sendStatus(500);
     console.log(err);
+    res.sendStatus(500);
   }
 }
 
@@ -69,7 +69,6 @@ async function getMovieDetail(req, res) {
     const movie = await movieService.getMovieDetail(movieID);
     res.send(movie);
   } catch (err) {
-    res.sendStatus(500);
     console.log(err);
   }
 }

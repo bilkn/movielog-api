@@ -23,5 +23,5 @@ app.get("/", (req, res) => {
   res.send({ success: true, message: "Succesful!" });
 });
 
-app.use("/api/user", UserRouter);
 app.use("/api", MovieRouter);
+app.use("/api/user", UserRouter);

@@ -82,6 +82,8 @@ async function deleteMovieFromTheList(req, res) {
   try {
     const result = await deleteItemFromList(userID, list, movieID);
 
+    console.log(result);
+
     if (!result.matchedCount) {
       return res
         .status(404)
