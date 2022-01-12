@@ -13,6 +13,7 @@ const {
 const {
   addMovieToTheList,
   getMovieList,
+  deleteMovieFromTheList,
 } = require("../../controller/userListController");
 
 const {
@@ -41,6 +42,7 @@ router.delete(
 router
   .route("/list/:list")
   .put(authenticateToken, addMovieToTheList)
-  .get(authenticateToken, getMovieList);
+  .get(authenticateToken, getMovieList)
+  .delete(authenticateToken, deleteMovieFromTheList);
 
 module.exports = router;

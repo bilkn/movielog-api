@@ -1,4 +1,8 @@
-const { addItemToList, getList } = require("@core/lib/services/UserService");
+const {
+  addItemToList,
+  getList,
+  deleteItemFromList,
+} = require("@core/lib/services/UserService");
 const { movieService } = require("../services");
 
 const validLists = ["watchedList", "watchList"];
@@ -68,7 +72,40 @@ async function getMovieList(req, res) {
   }
 }
 
+async function deleteMovieFromTheList(req, res) {
+  const { id: userID } = req.user;
+  const { movie: movieID } = req.query;
+  const { list } = req.params;
+
+  if (!isListValid(res, list)) return;
+
+  try {
+    const result = await deleteItemFromList(userID, list, movieID);
+
+    if (!result.matchedCount) {
+      return res
+        .status(404)
+        .send({ success: false, message: "Item could not be found!" });
+    }
+
+    if (!result.modifiedCount) {
+      return res
+        .status(404)
+        .send({ success: false, message: "Item could not be modified!" });
+    }
+
+    res.send({
+      success: true,
+      message: `Movie is removed from your ${listNames[list]} successfully.`,
+    });
+  } catch (err) {
+    res.sendStatus(500);
+    console.log(err);
+  }
+}
+
 module.exports = {
   addMovieToTheList,
   getMovieList,
+  deleteMovieFromTheList,
 };

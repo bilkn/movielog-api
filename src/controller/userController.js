@@ -52,7 +52,7 @@ async function deleteUserData(req, res) {
   }
 }
 
-async function getUserInfo(req, res) {
+function getUserInfo(req, res) {
   const { username } = req.user;
   res.send({ username });
 }
