@@ -2,6 +2,7 @@ const { deleteUser, resetUserData } = require("@core/lib/services/UserService");
 const needle = require("needle");
 const { AUTH_SERVER_URL } = require("../constants/url");
 const { sendBadRequestError } = require("../utils");
+const { findUserByUsername } = require("@core/lib/services/AuthService");
 
 async function deleteAccount(req, res) {
   const { password, refreshToken } = req.body;
@@ -52,9 +53,21 @@ async function deleteUserData(req, res) {
   }
 }
 
-function getUserInfo(req, res) {
+async function getUserInfo(req, res) {
+  const { include } = req.query;
   const { username } = req.user;
-  res.send({ username });
+  let data = { username };
+
+  try {
+    if (include === "email") {
+      const {email} = await findUserByUsername(username, { _id: 0, email: 1 });
+      data.email = email;
+      console.log('I get it')
+    }
+  } catch (err) {
+    console.log(err);
+  }
+  res.send(data);
 }
 
 module.exports = {
