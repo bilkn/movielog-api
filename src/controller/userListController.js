@@ -34,7 +34,7 @@ async function addMovieToTheList(req, res) {
 
   try {
     let movie = null;
-    movie = await movieService.getMovieDetail(movieID);
+    movie = await movieService.getMovieDetail(userID, movieID);
 
     if (list === "watchedList") {
       movie.watchDate = new Date();
@@ -60,6 +60,8 @@ async function addMovieToTheList(req, res) {
 async function getMovieList(req, res) {
   const { id: userID } = req.user;
   const { list } = req.params;
+
+  console.log(userID,list);
 
   if (!isListValid(res, list)) return;
 

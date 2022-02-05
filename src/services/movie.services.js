@@ -1,4 +1,7 @@
 const needle = require("needle");
+const {
+  checkIfItemExistsInList,
+} = require("../../../../libs/core-lib/services/UserService");
 
 const API_BASE_URL = process.env.API_BASE_URL;
 const API_KEY_NAME = process.env.API_KEY_NAME;
@@ -15,10 +18,10 @@ const getReleaseYear = (date) => date.split("-")[0];
 
 const getCastByMovieID = async (id) => {
   const urlParams = createSearchParams();
-
   const {
     body: { cast },
   } = await needle("get", `${API_BASE_URL}/movie/${id}/credits?${urlParams}`);
+
   return cast.map(({ profile_path: profile, original_name: name }) => ({
     profile,
     name,
@@ -27,33 +30,51 @@ const getCastByMovieID = async (id) => {
 
 /* Reponse creators */
 
-const createMovieListResponse = async (data) => {
+const createMovieListResponse = async (data, userID) => {
   const urlParams = createSearchParams();
-
   const {
     body: { genres },
   } = await needle("get", `${API_BASE_URL}/genre/movie/list?${urlParams}`);
 
   if (genres) {
-    return data.map(
-      ({ id, title, release_date, genre_ids, poster_path, vote_average }) => ({
-        id,
-        title,
-        releaseYear: getReleaseYear(release_date),
-        genres: genre_ids.map((genreID) => ({
-          id: genreID,
-          name: genres.find(({ id }) => id === genreID).name,
-        })),
-        poster: poster_path,
-        rating: vote_average,
-        watched: false,
-        willWatch: false,
-      })
+    return await Promise.all(
+      data.map(
+        async ({
+          id,
+          title,
+          release_date,
+          genre_ids,
+          poster_path,
+          vote_average,
+        }) => {
+          const watched = userID
+            ? await checkIfItemExistsInList(userID, id, "watchedList")
+            : false;
+
+          const willWatch = userID
+            ? await checkIfItemExistsInList(userID, id, "watchList")
+            : false;
+
+          return {
+            id,
+            title,
+            releaseYear: getReleaseYear(release_date),
+            genres: genre_ids.map((genreID) => ({
+              id: genreID,
+              name: genres.find(({ id }) => id === genreID).name,
+            })),
+            poster: poster_path,
+            rating: vote_average,
+            watched,
+            willWatch,
+          };
+        }
+      )
     );
   }
 };
 
-const createMovieDetailResponse = async (data) => {
+const createMovieDetailResponse = async (data, userID) => {
   const {
     genres,
     id,
@@ -65,6 +86,8 @@ const createMovieDetailResponse = async (data) => {
   } = data;
 
   const cast = await getCastByMovieID(id);
+  const watched = await checkIfItemExistsInList(userID, id, "watchedList");
+  const willWatch = await checkIfItemExistsInList(userID, id, "watchList");
 
   return {
     cast,
@@ -75,22 +98,21 @@ const createMovieDetailResponse = async (data) => {
     rating: vote_average,
     releaseYear: getReleaseYear(release_date),
     title,
-    watched: false,
-    willWatch: false,
+    watched,
+    willWatch,
   };
 };
 
 /* Services */
 
-async function getMovieDetail(movieID) {
+async function getMovieDetail(userID, movieID) {
   const urlParams = createSearchParams();
-
   const { body } = await needle(
     "get",
     `${API_BASE_URL}/movie/${movieID}?${urlParams}`
   );
 
-  return createMovieDetailResponse(body);
+  return createMovieDetailResponse(body, userID);
 }
 
 async function getFeaturedMovies() {
@@ -103,24 +125,24 @@ async function getFeaturedMovies() {
   return createMovieListResponse(results);
 }
 
-async function searchMovies(params) {
+async function searchMovies(params, userID) {
   const urlParams = createSearchParams(params);
 
   const {
     body: { results },
   } = await needle("get", `${API_BASE_URL}/search/movie?${urlParams}`);
 
-  return createMovieListResponse(results);
+  return createMovieListResponse(results, userID);
 }
 
-async function getMoviesByGenre(params) {
+async function getMoviesByGenre(params, userID) {
   const urlParams = createSearchParams(params);
 
   const {
     body: { results },
   } = await needle("get", `${API_BASE_URL}/discover/movie?${urlParams}`);
 
-  return createMovieListResponse(results);
+  return createMovieListResponse(results, userID);
 }
 
 module.exports = {

@@ -5,6 +5,7 @@ const { movieService } = require("../services");
 async function getMoviesByGenre(req, res) {
   try {
     const { genres, page = 1 } = req.query;
+    const { user } = req;
 
     if (!genres) {
       const message = "Genre is not provided, please provide genre!";
@@ -16,7 +17,7 @@ async function getMoviesByGenre(req, res) {
       page,
     };
 
-    const movieList = await movieService.getMoviesByGenre(params);
+    const movieList = await movieService.getMoviesByGenre(params, user.id);
     res.send(movieList);
   } catch (err) {
     res.status(500);
@@ -26,6 +27,7 @@ async function getMoviesByGenre(req, res) {
 
 async function search(req, res) {
   const { q, page = 1 } = req.query;
+  const { user } = req;
 
   if (!q) {
     const message =
@@ -39,7 +41,7 @@ async function search(req, res) {
   };
 
   try {
-    const movieList = await movieService.searchMovies(params);
+    const movieList = await movieService.searchMovies(params, user.id);
     res.send(movieList);
   } catch (err) {
     res.sendStatus(500);
@@ -58,15 +60,18 @@ async function getFeaturedMovies(_, res) {
 }
 
 async function getMovieDetail(req, res) {
-  try {
-    const { movieID } = req.params;
+  const { params, user } = req;
 
+  try {
+    const { movieID } = params;
     if (!movieID) {
       const message = "Movie id is not provided, please provide movie id!";
       return sendBadRequestError(res, message);
     }
 
-    const movie = await movieService.getMovieDetail(movieID);
+    console.log("MOVIE ID", movieID);
+
+    const movie = await movieService.getMovieDetail(user.id, movieID);
     res.send(movie);
   } catch (err) {
     res.sendStatus(500);
