@@ -54,20 +54,37 @@ async function deleteUserData(req, res) {
 }
 
 async function getUserInfo(req, res) {
-  const { include } = req.query;
+  const { include = "" } = req.query;
   const { username } = req.user;
-  let data = { username };
+  const validParams = ["email", "username"];
 
   try {
-    if (include === "email") {
-      const {email} = await findUserByUsername(username, { _id: 0, email: 1 });
-      data.email = email;
-      console.log('I get it')
+    let includedFields = {};
+    if (include instanceof Array) {
+      includedFields = include.reduce(
+        (acc, cur) => {
+          if (validParams.includes(cur)) {
+            acc[cur] = 1;
+          }
+          return acc;
+        },
+        { username: 1 }
+      );
+    } else if (validParams.includes(include)) {
+      includedFields[include] = 1;
     }
+
+    const userInfo = await findUserByUsername(username, {
+      _id: 0,
+      username: 1,
+      ...includedFields,
+    });
+    console.log(userInfo);
+    res.send(userInfo);
   } catch (err) {
     console.log(err);
+    res.sendStatus(500);
   }
-  res.send(data);
 }
 
 module.exports = {
