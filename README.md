@@ -1,3 +1,3 @@
 # movielog-api
 
-Movielog backend 
+Movielog application backend 
