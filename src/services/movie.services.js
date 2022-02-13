@@ -46,7 +46,6 @@ const createMovieListResponse = async (data, userID) => {
           poster_path,
           vote_average,
         }) => {
-
           const watched = userID
             ? await checkIfItemExistsInList(userID, id, "watchedList")
             : false;
@@ -85,7 +84,6 @@ const createMovieDetailResponse = async (data, userID) => {
     title,
     vote_average,
   } = data;
-  console.log("movie response", userID, id, "watchedList");
   const cast = await getCastByMovieID(id);
   const watched = await checkIfItemExistsInList(userID, id, "watchedList");
   const willWatch = await checkIfItemExistsInList(userID, id, "watchList");

@@ -32,13 +32,21 @@ async function addMovieToTheList(req, res) {
   const { list } = req.params;
   const { movie: movieID } = req.query;
 
-  console.log(list)
-  try {
-    console.log("add movie", userID, movieID, list);
+  const otherList = {
+    watchList: "watchedList",
+    watchedList: "watchList",
+  };
 
+  try {
     if (await checkIfItemExistsInList(userID, movieID, list)) {
       return sendBadRequestError(res, "Item is already in the list!");
     }
+
+    // It checks the other list and deletes it from the other list if the item exists.
+    if (await checkIfItemExistsInList(userID, movieID, otherList[list])) {
+      await deleteItemFromList(userID, otherList[list], movieID);
+    }
+
     let movie = null;
     movie = await movieService.getMovieDetail(userID, movieID);
 
@@ -66,8 +74,6 @@ async function addMovieToTheList(req, res) {
 async function getMovieList(req, res) {
   const { id: userID } = req.user;
   const { list } = req.params;
-
-  console.log(userID, list);
 
   if (!isListValid(res, list)) return;
 
