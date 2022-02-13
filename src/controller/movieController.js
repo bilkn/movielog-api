@@ -1,4 +1,5 @@
 const { movieService } = require("../services");
+const { sendBadRequestError } = require("../utils");
 
 /* Controllers */
 
@@ -69,7 +70,6 @@ async function getMovieDetail(req, res) {
       return sendBadRequestError(res, message);
     }
 
-    console.log("MOVIE ID", movieID);
 
     const movie = await movieService.getMovieDetail(user.id, movieID);
     res.send(movie);

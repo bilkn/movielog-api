@@ -2,8 +2,10 @@ const {
   addItemToList,
   getList,
   deleteItemFromList,
+  checkIfItemExistsInList,
 } = require("@core/lib/services/UserService");
 const { movieService } = require("../services");
+const { sendBadRequestError } = require("../utils");
 
 const validLists = ["watchedList", "watchList"];
 const listNames = {
@@ -30,9 +32,13 @@ async function addMovieToTheList(req, res) {
   const { list } = req.params;
   const { movie: movieID } = req.query;
 
-  if (!isListValid(res, list)) return;
-
+  console.log(list)
   try {
+    console.log("add movie", userID, movieID, list);
+
+    if (await checkIfItemExistsInList(userID, movieID, list)) {
+      return sendBadRequestError(res, "Item is already in the list!");
+    }
     let movie = null;
     movie = await movieService.getMovieDetail(userID, movieID);
 
@@ -61,7 +67,7 @@ async function getMovieList(req, res) {
   const { id: userID } = req.user;
   const { list } = req.params;
 
-  console.log(userID,list);
+  console.log(userID, list);
 
   if (!isListValid(res, list)) return;
 
