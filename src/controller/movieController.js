@@ -1,4 +1,5 @@
 const { movieService } = require("../services");
+const { sendBadRequestError } = require("../utils");
 
 /* Controllers */
 
@@ -28,7 +29,6 @@ async function getMoviesByGenre(req, res) {
 async function search(req, res) {
   const { q, page = 1 } = req.query;
   const { user } = req;
-
   if (!q) {
     const message =
       "Search query is not provided, please provide search query!";
@@ -42,17 +42,18 @@ async function search(req, res) {
 
   try {
     const movieList = await movieService.searchMovies(params, user.id);
-    res.send(movieList);
+    return res.send(movieList);
   } catch (err) {
     res.sendStatus(500);
     console.log(err);
   }
 }
 
-async function getFeaturedMovies(_, res) {
+async function getFeaturedMovies(req, res) {
+  const { user } = req;
   try {
-    const featuredMovies = await movieService.getFeaturedMovies();
-    res.send(featuredMovies);
+    const featuredMovies = await movieService.getFeaturedMovies(user.id);
+    return res.send(featuredMovies);
   } catch (err) {
     res.sendStatus(500);
     console.log(err);
@@ -68,8 +69,6 @@ async function getMovieDetail(req, res) {
       const message = "Movie id is not provided, please provide movie id!";
       return sendBadRequestError(res, message);
     }
-
-    console.log("MOVIE ID", movieID);
 
     const movie = await movieService.getMovieDetail(user.id, movieID);
     res.send(movie);

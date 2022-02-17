@@ -35,7 +35,6 @@ const createMovieListResponse = async (data, userID) => {
   const {
     body: { genres },
   } = await needle("get", `${API_BASE_URL}/genre/movie/list?${urlParams}`);
-
   if (genres) {
     return await Promise.all(
       data.map(
@@ -47,22 +46,28 @@ const createMovieListResponse = async (data, userID) => {
           poster_path,
           vote_average,
         }) => {
-          const watched = userID
-            ? await checkIfItemExistsInList(userID, id, "watchedList")
-            : false;
+          const watched = await checkIfItemExistsInList(
+            userID,
+            id,
+            "watchedList"
+          );
 
-          const willWatch = userID
-            ? await checkIfItemExistsInList(userID, id, "watchList")
-            : false;
+          const willWatch = await checkIfItemExistsInList(
+            userID,
+            id,
+            "watchList"
+          );
 
           return {
             id,
             title,
-            releaseYear: getReleaseYear(release_date),
-            genres: genre_ids.map((genreID) => ({
-              id: genreID,
-              name: genres.find(({ id }) => id === genreID).name,
-            })),
+            releaseYear: release_date ? getReleaseYear(release_date) : "",
+            genres: genre_ids.length
+              ? genre_ids.map((genreID) => ({
+                  id: genreID,
+                  name: genres.find(({ id }) => id === genreID).name,
+                }))
+              : null,
             poster: poster_path,
             rating: vote_average,
             watched,
@@ -84,7 +89,6 @@ const createMovieDetailResponse = async (data, userID) => {
     title,
     vote_average,
   } = data;
-
   const cast = await getCastByMovieID(id);
   const watched = await checkIfItemExistsInList(userID, id, "watchedList");
   const willWatch = await checkIfItemExistsInList(userID, id, "watchList");
@@ -115,24 +119,28 @@ async function getMovieDetail(userID, movieID) {
   return createMovieDetailResponse(body, userID);
 }
 
-async function getFeaturedMovies() {
+async function getFeaturedMovies(userID) {
   const urlParams = createSearchParams();
 
   const {
     body: { results },
   } = await needle("get", `${API_BASE_URL}/movie/popular?${urlParams}`);
 
-  return createMovieListResponse(results);
+  return createMovieListResponse(results,userID);
 }
 
 async function searchMovies(params, userID) {
   const urlParams = createSearchParams(params);
 
   const {
-    body: { results },
+    body: { results, total_pages, page },
   } = await needle("get", `${API_BASE_URL}/search/movie?${urlParams}`);
 
-  return createMovieListResponse(results, userID);
+  return {
+    total_pages,
+    page,
+    list: await createMovieListResponse(results, userID),
+  };
 }
 
 async function getMoviesByGenre(params, userID) {

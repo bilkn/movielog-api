@@ -80,7 +80,7 @@ async function getUserInfo(req, res) {
       ...includedFields,
     });
     console.log(userInfo);
-    res.send(userInfo);
+    return res.send(userInfo);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
