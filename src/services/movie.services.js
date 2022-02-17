@@ -46,13 +46,18 @@ const createMovieListResponse = async (data, userID) => {
           poster_path,
           vote_average,
         }) => {
-          const watched = userID
-            ? await checkIfItemExistsInList(userID, id, "watchedList")
-            : false;
+          const watched = await checkIfItemExistsInList(
+            userID,
+            id,
+            "watchedList"
+          );
 
-          const willWatch = userID
-            ? await checkIfItemExistsInList(userID, id, "watchList")
-            : false;
+          const willWatch = await checkIfItemExistsInList(
+            userID,
+            id,
+            "watchList"
+          );
+
           return {
             id,
             title,
@@ -114,14 +119,14 @@ async function getMovieDetail(userID, movieID) {
   return createMovieDetailResponse(body, userID);
 }
 
-async function getFeaturedMovies() {
+async function getFeaturedMovies(userID) {
   const urlParams = createSearchParams();
 
   const {
     body: { results },
   } = await needle("get", `${API_BASE_URL}/movie/popular?${urlParams}`);
 
-  return createMovieListResponse(results);
+  return createMovieListResponse(results,userID);
 }
 
 async function searchMovies(params, userID) {
