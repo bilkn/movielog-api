@@ -116,6 +116,8 @@ async function getMovieDetail(userID, movieID) {
     `${API_BASE_URL}/movie/${movieID}?${urlParams}`
   );
 
+  console.log('get movie detail');
+
   return createMovieDetailResponse(body, userID);
 }
 
@@ -139,7 +141,7 @@ async function searchMovies(params, userID) {
   return {
     total_pages,
     page,
-    list: await createMovieListResponse(results, userID),
+    items: await createMovieListResponse(results, userID),
   };
 }
 

@@ -35,6 +35,8 @@ async function search(req, res) {
     return sendBadRequestError(res, message);
   }
 
+  console.log('search movies')
+
   const params = {
     query: q,
     page,
