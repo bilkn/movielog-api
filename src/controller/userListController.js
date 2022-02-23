@@ -78,7 +78,7 @@ async function addMovieToTheList(req, res) {
 
     return res.send({
       success: true,
-      message: `Movie is added to your ${listNames[list]} successfully.`,
+      message: `The movie is added to your ${listNames[list]}.`,
     });
   } catch (err) {
     res.sendStatus(500);
@@ -94,8 +94,7 @@ async function getMovieList(req, res) {
   if (!isListValid(res, list)) return;
 
   const ITEMS_PER_PAGE = 10;
-  const skip = page - 1 * ITEMS_PER_PAGE;
-  console.log({page})
+  let skip = (page - 1) * ITEMS_PER_PAGE;
   try {
     const movieList = await getList(userID, list, skip);
     const { totalPages } = movieList[0];
@@ -114,6 +113,8 @@ async function deleteMovieFromTheList(req, res) {
   const { id: userID } = req.user;
   const { movie: movieID } = req.query;
   const { list } = req.params;
+
+  console.log({ list });
 
   if (!isListValid(res, list)) return;
 
@@ -134,7 +135,7 @@ async function deleteMovieFromTheList(req, res) {
 
     return res.send({
       success: true,
-      message: `Movie is removed from your ${listNames[list]} successfully.`,
+      message: `The movie is removed from your ${listNames[list]}.`,
       data: {
         [listNameByMovieList[list]]: false,
       },
