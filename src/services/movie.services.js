@@ -116,8 +116,6 @@ async function getMovieDetail(userID, movieID) {
     `${API_BASE_URL}/movie/${movieID}?${urlParams}`
   );
 
-  console.log('get movie detail');
-
   return createMovieDetailResponse(body, userID);
 }
 
@@ -128,7 +126,7 @@ async function getFeaturedMovies(userID) {
     body: { results },
   } = await needle("get", `${API_BASE_URL}/movie/popular?${urlParams}`);
 
-  return createMovieListResponse(results,userID);
+  return createMovieListResponse(results, userID);
 }
 
 async function searchMovies(params, userID) {
@@ -149,10 +147,18 @@ async function getMoviesByGenre(params, userID) {
   const urlParams = createSearchParams(params);
 
   const {
-    body: { results },
+    body: { results, total_pages: totalPages, page: currentPage },
   } = await needle("get", `${API_BASE_URL}/discover/movie?${urlParams}`);
 
-  return createMovieListResponse(results, userID);
+  const movieList = await createMovieListResponse(results, userID);
+
+  return {
+    items: movieList,
+    pagination: {
+      totalPages,
+      currentPage,
+    },
+  };
 }
 
 module.exports = {
