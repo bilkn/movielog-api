@@ -18,8 +18,9 @@ async function getMoviesByGenre(req, res) {
       page,
     };
 
-    const movieList = await movieService.getMoviesByGenre(params, user.id);
-    res.send(movieList);
+    const movieListData = await movieService.getMoviesByGenre(params, user.id);
+
+    res.send(movieListData);
   } catch (err) {
     res.status(500);
     console.log(err);
@@ -35,7 +36,7 @@ async function search(req, res) {
     return sendBadRequestError(res, message);
   }
 
-  console.log('search movies')
+  console.log("search movies");
 
   const params = {
     query: q,

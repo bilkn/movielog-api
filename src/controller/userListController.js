@@ -9,8 +9,8 @@ const { sendBadRequestError } = require("../utils");
 
 const validLists = ["watchedList", "watchList"];
 const listNames = {
-  watchedList: "watched list",
-  watchList: "watch list",
+  watchedList: "watchlog",
+  watchList: "watchlist",
 };
 
 const listNameByMovieList = {
